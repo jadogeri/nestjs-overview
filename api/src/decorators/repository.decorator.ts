@@ -1,14 +1,11 @@
-import { applyDecorators, Injectable, SetMetadata } from '@nestjs/common';
+import { SetMetadata, Injectable, applyDecorators } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 
-export const REPOSITORY_METADATA_KEY = 'custom:repository';
+const REPOSITORY_METADATA_KEY = Reflector.createDecorator<boolean>();
 
-export function Repository(): ClassDecorator {
+export const Repository = (entity: Function) => {
   return applyDecorators(
-    Injectable(),
-    SetMetadata(REPOSITORY_METADATA_KEY, true),
+    SetMetadata(REPOSITORY_METADATA_KEY, entity),
+    Injectable(), // NestJS handles the application and typing here
   );
-}
-
-export function isRepository(target: Function): boolean {
-  return Reflect.getMetadata(REPOSITORY_METADATA_KEY, target) === true;
-}
+};
